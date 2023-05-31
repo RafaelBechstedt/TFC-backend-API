@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import Token from './toekn';
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^\S+@\S+\.\S+$/;
@@ -23,4 +24,20 @@ const validateLogin = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-export default validateLogin;
+const validateToken = (req: Request, res: Response, next: NextFunction) => {
+  const { authorization } = req.headers;
+
+  if (!authorization) {
+    return res.status(401).json({ message: 'Token not found' });
+  }
+
+  try {
+    Token.validateToken(authorization);
+  } catch (err) {
+    return res.status(401).json({ message: 'Token must be a valid token' });
+  }
+
+  next();
+};
+
+export { validateLogin, validateToken };

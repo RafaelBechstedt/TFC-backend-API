@@ -8,8 +8,18 @@ class LoginService {
     if (!user || !compareSync(password, user.password)) {
       return undefined;
     }
-    const token = Token.generateToken(email);
+    const { role } = user;
+    const token = Token.generateToken({ email, role });
     return token;
+  }
+
+  static async getRole(email: string) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return undefined;
+    }
+    const role = user?.role;
+    return role;
   }
 }
 

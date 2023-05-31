@@ -7,11 +7,20 @@ const configJWT: jwt.SignOptions = {
   algorithm: 'HS256',
 };
 
+interface ITokenPayload{
+  email: string,
+  role: string
+}
+
 class Token {
-  static generateToken(email: string) {
-    const payload = { email };
+  static generateToken(payload: ITokenPayload) {
     const token = jwt.sign(payload, secret, configJWT);
     return token;
+  }
+
+  static validateToken(token: string) {
+    const payload = jwt.verify(token, secret);
+    return payload;
   }
 }
 
