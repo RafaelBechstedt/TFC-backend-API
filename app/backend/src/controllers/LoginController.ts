@@ -15,15 +15,15 @@ class LoginController {
   static async getRole(req: Request, res: Response) {
     const { authorization } = req.headers;
     if (!authorization) {
-      throw new Error();
+      return res.status(401).json({ message: 'Token not found' });
     }
     const decodedToken = Token.decodeToken(authorization);
     let email = null;
     if (typeof decodedToken === 'string' || decodedToken === null) {
-      throw new Error();
-    } else {
-      email = decodedToken.email;
+      return res.status(401).json({ message: 'Token must be a valid token' });
     }
+    email = decodedToken.email;
+
     const role = await LoginService.getRole(email);
     return res.status(200).json({ role });
   }
