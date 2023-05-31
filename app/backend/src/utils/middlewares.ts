@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import Token from './toekn';
+import Token from './token';
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^\S+@\S+\.\S+$/;

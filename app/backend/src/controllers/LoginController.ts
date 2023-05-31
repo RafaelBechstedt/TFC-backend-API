@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import LoginService from '../services/LoginService';
+import Token from '../utils/token';
 
 class LoginController {
   static async login(req: Request, res: Response) {
@@ -12,10 +13,29 @@ class LoginController {
   }
 
   static async getRole(req: Request, res: Response) {
-    const { email } = req.body;
+    const { authorization } = req.headers;
+    if (!authorization) {
+      throw new Error();
+    }
+    const decodedToken = Token.decodeToken(authorization);
+    let email = null;
+    if (typeof decodedToken === 'string' || decodedToken === null) {
+      throw new Error();
+    } else {
+      email = decodedToken.email;
+    }
     const role = await LoginService.getRole(email);
     return res.status(200).json({ role });
   }
+  // static async getRole(req: Request, res: Response) {
+  //   const { authorization } = req.headers;
+  //   if (!authorization) {
+  //     throw new Error();
+  //   }
+  //   const decodedToken = Token.decodeToken(authorization);
+  //   const role = await LoginService.getRole(email);
+  //   return res.status(200).json({ role });
+  // }
 }
 
 export default LoginController;

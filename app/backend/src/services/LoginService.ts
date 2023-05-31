@@ -1,6 +1,6 @@
 import { compareSync } from 'bcryptjs';
 import User from '../database/models/UserModel';
-import Token from '../utils/toekn';
+import Token from '../utils/token';
 
 class LoginService {
   static async login(email: string, password: string) {

@@ -22,6 +22,11 @@ class Token {
     const payload = jwt.verify(token, secret);
     return payload;
   }
+
+  static decodeToken(token: string) {
+    const payload = jwt.decode(token);
+    return payload;
+  }
 }
 
 export default Token;
