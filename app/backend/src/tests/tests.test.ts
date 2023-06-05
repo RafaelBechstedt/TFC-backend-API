@@ -42,6 +42,13 @@ describe('Login Endpoint', () => {
   });
 
   it('should return a token when login is successful', async () => {
+    const mockedUser = {
+      username: 'Admin',
+      role: 'admin',
+      email: 'admin@admin.com',
+      password: 'secret_admin'
+    };
+
     const mockedToken = 'mockedToken';
 
     sinon.stub(LoginService, 'login').resolves(mockedToken);
@@ -49,19 +56,26 @@ describe('Login Endpoint', () => {
     const res = await chai
       .request(app)
       .post('/login')
-      .send({ email: 'john.doe@example.com', password: 'password' });
+      .send({ email: mockedUser.email, password: mockedUser.password });
 
     expect(res).to.have.status(200);
     expect(res.body).to.deep.equal({ token: mockedToken });
   });
 
   it('should return an error message when login fails', async () => {
+    const mockedUser = {
+      username: 'User',
+      role: 'user',
+      email: 'user@user.com',
+      password: 'secret_user'
+    };
+
     sinon.stub(LoginService, 'login').resolves(undefined);
 
     const res = await chai
       .request(app)
       .post('/login')
-      .send({ email: 'john.doe@example.com', password: 'password' });
+      .send({ email: mockedUser.email, password: mockedUser.password });
 
     expect(res).to.have.status(401);
     expect(res.body).to.deep.equal({ message: 'Invalid email or password' });
