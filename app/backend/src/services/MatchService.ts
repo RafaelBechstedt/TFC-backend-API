@@ -1,12 +1,7 @@
 import Team from '../database/models/TeamModel';
 import Match from '../database/models/MatchModel';
-
-interface ICreatedMatch {
-  homeTeamId: number;
-  awayTeamId: number;
-  homeTeamGoals: number;
-  awayTeamGoals: number;
-}
+import { ICreatedMatch } from '../interfaces/CreateMatch';
+import { IMatch } from '../interfaces/Match';
 
 class MatchService {
   static async findAll() {
@@ -25,18 +20,19 @@ class MatchService {
       ],
     });
     console.log(matches);
-    return matches;
+    return matches as unknown as IMatch[];
   }
 
   public static async inProgress() {
     const matches = await this.findAll();
-    const inProgress = matches.filter((match) => match.dataValues.inProgress === true);
+    const inProgress = matches.filter((match) => match.inProgress === true);
     return inProgress;
   }
 
   static async finishedMatches() {
     const matches = await this.findAll();
-    const finished = matches.filter((match) => match.dataValues.inProgress === false);
+    const finished = matches.filter((match) => match.inProgress === false);
+    console.log(finished);
     return finished;
   }
 
