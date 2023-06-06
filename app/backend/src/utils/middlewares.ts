@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-// import Token from './token';
+import Token from './token';
 
 const isValidEmail = (email: string): boolean => {
   const emailRegex = /^\S+@\S+\.\S+$/;
@@ -24,20 +24,30 @@ const validateLogin = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-// const validateToken = (req: Request, res: Response, next: NextFunction) => {
-//   const { authorization } = req.headers;
+const validateToken = (req: Request, res: Response, next: NextFunction) => {
+  const { authorization } = req.headers;
 
-//   if (!authorization) {
-//     return res.status(401).json({ message: 'Token not found' });
-//   }
+  if (!authorization) {
+    return res.status(401).json({ message: 'Token not found' });
+  }
 
-//   try {
-//     Token.validateToken(authorization);
-//   } catch (err) {
-//     return res.status(401).json({ message: 'Token must be a valid token' });
-//   }
+  try {
+    Token.validateToken(authorization);
+  } catch (err) {
+    return res.status(401).json({ message: 'Token must be a valid token' });
+  }
 
-//   next();
-// };
+  next();
+};
 
-export default validateLogin;
+const validateCreateMatch = (req: Request, res: Response, next: NextFunction) => {
+  const { homeTeamId, awayTeamId } = req.body;
+  if (homeTeamId === awayTeamId) {
+    return res.status(422).json({
+      message: 'It is not possible to create a match with two equal teams' });
+  }
+
+  next();
+};
+
+export default { validateLogin, validateToken, validateCreateMatch };
