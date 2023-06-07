@@ -3,15 +3,14 @@ import { countVictories,
   countLosses,
   calculateGoalsFavor,
   calculateGoalsOwn,
-  getHomeMatchesByTeam,
+  getAwayMatchesByTeam,
   calculateGoalsBalance,
-  calculateEfficiency } from '../utils/calculateLeaderBoard';
+  calculateEfficiency } from '../utils/calculateLeaderBoardAway';
 import { IMatch } from '../interfaces/Match';
-// import { ILeaderBoard } from '../interfaces/LeaderBoard';
 import MatchService from './MatchService';
 import TeamService from './TeamService';
 
-class LeaderBoardService {
+class LeaderBoardAwayService {
   static generateLeaderBoard(matches: IMatch[], teamName: string) {
     const totalVictories = countVictories(matches);
     const totalDraws = countDraws(matches);
@@ -28,16 +27,16 @@ class LeaderBoardService {
     };
   }
 
-  static async getHomeInfo() {
+  static async getAwayInfo() {
     const teams = await TeamService.findAll();
     const matches = await MatchService.finishedMatches();
 
-    const homeInfo = teams.map((team) => {
-      const homeMatches = getHomeMatchesByTeam(team.teamName, matches);
-      return this.generateLeaderBoard(homeMatches, team.teamName);
+    const awayInfo = teams.map((team) => {
+      const awayMatches = getAwayMatchesByTeam(team.teamName, matches);
+      return this.generateLeaderBoard(awayMatches, team.teamName);
     });
 
-    homeInfo.sort((a, b) => {
+    awayInfo.sort((a, b) => {
       if (a.totalPoints !== b.totalPoints) {
         return b.totalPoints - a.totalPoints; // Ordenar por total de pontos (decrescente)
       } if (a.totalVictories !== b.totalVictories) {
@@ -48,8 +47,8 @@ class LeaderBoardService {
       return b.goalsFavor - a.goalsFavor; // Ordenar por gols a favor (decrescente)
     });
 
-    return homeInfo;
+    return awayInfo;
   }
 }
 
-export default LeaderBoardService;
+export default LeaderBoardAwayService;
