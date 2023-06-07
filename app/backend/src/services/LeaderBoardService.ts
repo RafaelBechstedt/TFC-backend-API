@@ -3,7 +3,9 @@ import { countVictories,
   countLosses,
   calculateGoalsFavor,
   calculateGoalsOwn,
-  getHomeMatchesByTeam } from '../utils/calculateLeaderBoard';
+  getHomeMatchesByTeam,
+  calculateGoalsBalance,
+  calculateEfficiency } from '../utils/calculateLeaderBoard';
 import { IMatch } from '../interfaces/Match';
 // import { ILeaderBoard } from '../interfaces/LeaderBoard';
 import MatchService from './MatchService';
@@ -11,23 +13,18 @@ import TeamService from './TeamService';
 
 class LeaderBoardService {
   static generateLeaderBoard(matches: IMatch[], teamName: string) {
-    const totalGames = matches.length;
     const totalVictories = countVictories(matches);
     const totalDraws = countDraws(matches);
-    const totalLosses = countLosses(matches);
-    const goalsFavor = calculateGoalsFavor(matches);
-    const goalsOwn = calculateGoalsOwn(matches);
-    const totalPoints = totalVictories * 3 + totalDraws;
-
-    return {
-      name: teamName,
-      totalPoints,
-      totalGames,
+    return { name: teamName,
+      totalGames: matches.length,
       totalVictories,
       totalDraws,
-      totalLosses,
-      goalsFavor,
-      goalsOwn,
+      totalLosses: countLosses(matches),
+      goalsFavor: calculateGoalsFavor(matches),
+      goalsOwn: calculateGoalsOwn(matches),
+      totalPoints: totalVictories * 3 + totalDraws,
+      goalsBalance: calculateGoalsBalance(matches),
+      efficiency: calculateEfficiency(matches),
     };
   }
 
@@ -39,6 +36,18 @@ class LeaderBoardService {
       const homeMatches = getHomeMatchesByTeam(team.teamName, matches);
       return this.generateLeaderBoard(homeMatches, team.teamName);
     });
+
+    homeInfo.sort((a, b) => {
+      if (a.totalPoints !== b.totalPoints) {
+        return b.totalPoints - a.totalPoints; // Ordenar por total de pontos (decrescente)
+      } if (a.totalVictories !== b.totalVictories) {
+        return b.totalVictories - a.totalVictories; // Ordenar por total de vitórias (decrescente)
+      } if (a.goalsBalance !== b.goalsBalance) {
+        return b.goalsBalance - a.goalsBalance; // Ordenar por saldo de gols (decrescente)
+      }
+      return b.goalsFavor - a.goalsFavor; // Ordenar por gols a favor (decrescente)
+    });
+
     return homeInfo;
   }
 }

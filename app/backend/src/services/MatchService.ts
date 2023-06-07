@@ -19,7 +19,6 @@ class MatchService {
         },
       ],
     });
-    console.log(matches);
     return matches as unknown as IMatch[];
   }
 
@@ -32,7 +31,6 @@ class MatchService {
   static async finishedMatches() {
     const matches = await this.findAll();
     const finished = matches.filter((match) => match.inProgress === false);
-    console.log(finished);
     return finished;
   }
 
